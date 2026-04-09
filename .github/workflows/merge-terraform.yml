@@ -1,0 +1,13 @@
+name: Merge Terraform
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  merge:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Confirm merge
+        run: echo 'Terraform PR merged.'
