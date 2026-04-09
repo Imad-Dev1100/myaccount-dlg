@@ -1,0 +1,136 @@
+Propagation Workflow
+The propagation of code and infrastructure changes follows this path:
+DEV → TEST → STAGING → PROD (OFFLINE) → PROD (ONLINE)
+_____________________________________________________________________________
+Environment Overview and Configurations
+Environment	Purpose	Infra Provisioning	Deployment Trigger	Runner Type	Approval Required	AWS Account	Notes
+Environment	Purpose	Infra Provisioning	Deployment Trigger	Runner Type	Approval Required	AWS Account	Notes
+DEV	Developer	Terraform	PR/Merge to main	GitHub-hosted	No	AWS_DEV	Automated Unit/Integration/E2E Testing, Static analysis, terraform plan
+TEST	QA	Terraform	PR/Merge to main	Self-hosted	No	AWS_QA	QA and Perf/E2E Tests, Security scans
+STAGING	Pre-Prod	Terraform	Manual trigger	Self-hosted	Yes
+(Lead)	AWS_STAGING	UAT, exploratory/Perf tests, Security scans
+PROD(OFFLINE)	Prod	Terraform	Manual trigger	Self-hosted	Yes (PO/Lead)	AWS_PROD	Smoke Test, Blue/Green, SNOW integration, Final Validation, not customer facing
+Production(ONLINE)	Live	Terraform	Manual trigger	Self-hosted	Yes (PO/Lead)	AWS_PROD	Blue/Green switch, SNOW close, Live, Monitoring, Customer facing
+_________________________________________________________________________________
+Development (DEV)
+Purpose:
+•	Active development, initial validation, and fast feedback.
+How it works:
+1.	Code Commit & PR:
+o	Developers push code to feature branches and open Pull Requests (PRs) against main.
+2.	GitHub Actions Trigger:
+o	On PR or merge to main, GitHub Actions (using GitHub-hosted runners) automatically run:
+	Linting
+	Unit tests (with mocked upstream services)
+	Integration tests (with upstream SI microservice)
+	Static analysis (e.g., Codacy(Mycro Service) and SonarQube(UI+BFF))
+3.	Terraform Plan:
+o	If infrastructure changes are detected, a terraform plan is run (but not applied).
+4.	Feedback:
+o	Results are posted to the PR for developer review.
+Access Control:
+•	Restricted to developers
+Automation:
+•	All steps are automated via GitHub Actions.
+•	No manual approvals required at this stage.
+Pipelines | DL Engineering Handbook  (pipelines standards)
+_____________________________________________________________________
+
+•	Branching Strategy: main for production, dev for development, feature branches for new work.
+_______________________________________________________________________
+Infrastructure as Code
+Terraform Implementation
+•	Environment-Specific Configuration: Modules and workspaces maintain parity and allow customization.
+•	Automated Provisioning: Integrated with CI/CD for error-free deployments.
+•	Access Control: Managed via GitHub, with codeowner approvals.
+•	Change Management: Automated SNOW integration for change requests
+_____________________________________________________________________________
+Application Deployment
+•	Frontend: ECS Fargate with golden image patterns (Example Dockerfile).
+•	BFF: AWS Lambda with provisioned concurrency and X-Ray tracing (AWS Lambda Provisioned Concurrency, AWS X-Ray Documentation).
+Naming Conventions
+Naming things can be difficult, but it is imperative to get this right. By adopting our consistent and descriptive naming convention for resources it enhances readability, maintainability, collaboration and scalability across the organisation for infrastructure management.
+Terraform objects should be named with underscores to delimit multiple words:
+
+resource "aws_iam_policy" "example_policy" {
+}
+
+Resources created in the Cloud should be named through convention:
+resource "aws_iam_policy" "example_policy" {
+  name   = "<platform_code>_<account/environment>_<service/application>_<descriptor>_<suffix>"
+}
+
+•	platform_code - is short prefix for the platform, e.g. home, motor, mch etc.
+o	Aim for a minimum of 3 and a maximum of 6 characters.
+o	Avoid numbers.
+o	If the resources will endure, avoid programme names.
+o	Choose a name that reflects the service provided to the business.
+o	Agree the platform name with the wider project/support team and look or any potential issues.
+•	account/environment - either a account level name or environment, e.g. dev, test, staging etc.
+•	service/application - The service or application of the resource, e.g. mule, gwpc, carweb, hopewiser etc.
+•	descriptor - a meaningful descriptor to help identify a specific resource of an service or application e.g. addresslookup
+•	suffix - an optional section to add a version, or type of resource if several etc.
+•	Don't repeat the resource type in the Terraform object name or Cloud resource name.
+______________________________________________________________________
+Some example Cloud resource names through convention:
+home_dev_gwpc_ui_instance
+home_test_gwpc_batch_sg
+motor_dev_gwpc_role
+motor_production_gwpc_ws_lb
+____________________________________________________________________
+Tagging
+Tagging your resources in mandatory in DL. This offers several important benefits:
+Using tags in AWS offers several important benefits:
+•	They help organise and categorise our resources, making it easier to manage and locate them.
+•	We can track spending by project, department, or environment, which aids in cost allocation and budget management.
+•	Enable automation for resource management, allowing us to apply policies or automate tasks based on specific tags.
+•	Manage access permissions through Identity and Access Management (IAM), ensuring that users only have access to resources they need.
+•	Assist in compliance efforts by helping to classify resources according to regulatory requirements.
+•	Make it easier to filter and search for resources Improving operational efficiency.
+Mandatory tags that must be set are:
+tags {
+  application = ""
+  business_owner = ""
+  cost_centre = ""
+  domain = ""
+  environment = ""
+  support_group = ""
+  technical_owner = ""
+  used_for = ""
+}
+
+Community Modules
+Terraform modules can be included in your configuration from a source of a GitHub/Git repository or the Terraform Registry. Both sources contain 100s of modules which are publicly shared and community-contributed that can help you quickly set up and manage infrastructure on various Cloud providers.
+Although in DL, only a subset of community sourced modules should be used:
+•	terraform-aws-modules
+•	azure
+Secrets Management
+Do not store secrets in plain text and NEVER commit them in your repository. Ensure you use a tool like pre-commit and Yelp to protect yourself against accidentally adding them.
+Store your secrets into your GitHub repositories or/and your Cloud providers service such as Secrets Manager in AWS.
+ 
+Terraform Version Constraint
+•	Requires Terraform version 1.11.0 or higher, but below version 2.0.0
+AWS Provider Configuration
+•	Specifies the AWS provider from HashiCorp's registry
+•	Requires version 6. 4.0 or higher, but below 7.0.0
+S3 Backend (State Management)
+•	Remote State: Stores Terraform state file in an S3 bucket named gfdigital-fronentd-dev-statefiles
+•	Region: Uses AWS eu-west-1 (Ireland) region
+•	Locking: use_lockfile = true enables state locking to prevent concurrent modifications
+AWS Provider Settings
+•	Region: All AWS resources will be created in eu-west-1
+•	Default Tags: Automatically applies tags defined in local.default_tags to all AWS resources for consistent resource tagging (useful for cost allocation, compliance, and resource management)
+This file serves as the foundation for the dev environment's Terraform configuration, ensuring:
+•	Consistent tooling versions across team members
+•	Remote state management with locking for team collaboration
+•	Centralized provider configuration
+•	Automatic resource tagging for governance
+Modules This Terraform configuration file defines an AWS ECR (Elastic Container Registry) module.
+This module creates and configures AWS ECR repositories for storing Docker container images, with specific access controls and lifecycle policies.
+ 
+___________________________________________________________________________
+
+
+
+
+
