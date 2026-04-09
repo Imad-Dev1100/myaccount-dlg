@@ -1,10 +1,10 @@
 resource "aws_secretsmanager_secret" "artifactory" {
-  name        = "artifactory-credentials-${var.environment}"
+  name        = "gfdigital_${var.environment}_myaccount_artifactory_credentials"
   description = "Artifactory credentials for the ${var.environment} environment."
   kms_key_id  = var.kms_key_id
 
   tags = merge(var.default_tags, {
-    Name = "artifactory-credentials-${var.environment}"
+    Name = "gfdigital_${var.environment}_myaccount_artifactory_secret"
   })
 }
 
@@ -17,12 +17,12 @@ resource "aws_secretsmanager_secret_version" "artifactory" {
 }
 
 resource "aws_secretsmanager_secret" "github_pat" {
-  name        = "github-pat-${var.environment}"
+  name        = "gfdigital_${var.environment}_myaccount_github_pat"
   description = "GitHub PAT secret for the ${var.environment} environment."
   kms_key_id  = var.kms_key_id
 
   tags = merge(var.default_tags, {
-    Name = "github-pat-${var.environment}"
+    Name = "gfdigital_${var.environment}_myaccount_github_secret"
   })
 }
 

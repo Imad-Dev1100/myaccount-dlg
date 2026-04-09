@@ -1,9 +1,9 @@
 resource "aws_iam_role" "service" {
-  name               = var.role_name
+  name               = "gfdigital_${var.environment}_myaccount_service_role"
   assume_role_policy = var.assume_role_policy
 
   tags = merge(var.default_tags, {
-    Name = "${var.environment}-iam-role"
+    Name = "gfdigital_${var.environment}_myaccount_service_role"
   })
 }
 

@@ -1,11 +1,11 @@
 data "aws_region" "current" {}
 
 resource "aws_api_gateway_rest_api" "this" {
-  name        = "${var.environment}-api"
+  name        = "gfdigital_${var.environment}_myaccount_api"
   description = "API Gateway REST API for ${var.environment}."
 
   tags = merge(var.default_tags, {
-    Name = "${var.environment}-api"
+    Name = "gfdigital_${var.environment}_myaccount_api"
   })
 }
 

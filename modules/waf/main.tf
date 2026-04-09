@@ -1,5 +1,5 @@
 resource "aws_wafv2_web_acl" "this" {
-  name        = "${var.environment}-web-acl"
+  name        = "gfdigital_${var.environment}_myaccount_web_acl"
   scope       = var.scope
   description = "WAFv2 web ACL for ${var.environment} environment."
 
@@ -9,12 +9,12 @@ resource "aws_wafv2_web_acl" "this" {
 
   visibility_config {
     cloudwatch_metrics_enabled = true
-    metric_name                = "${var.environment}-web-acl"
+    metric_name                = "gfdigital_${var.environment}_myaccount_web_acl"
     sampled_requests_enabled   = true
   }
 
   tags = merge(var.default_tags, {
-    Name = "waf-${var.environment}"
+    Name = "gfdigital_${var.environment}_myaccount_waf_acl"
   })
 }
 

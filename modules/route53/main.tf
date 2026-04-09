@@ -6,7 +6,7 @@ resource "aws_route53_zone" "private" {
   }
 
   tags = merge(var.default_tags, {
-    Name = "${var.environment}-private-zone"
+    Name = "gfdigital_${var.environment}_myaccount_route53_private_zone"
   })
 }
 

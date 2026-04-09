@@ -1,5 +1,5 @@
 resource "aws_security_group" "vpce" {
-  name        = "vpce-${var.environment}"
+  name        = "gfdigital_${var.environment}_myaccount_vpce_sg"
   description = "Security group for VPC interface endpoints in the ${var.environment} environment."
   vpc_id      = var.vpc_id
 
@@ -18,7 +18,7 @@ resource "aws_security_group" "vpce" {
   }
 
   tags = merge(var.default_tags, {
-    Name = "vpce-sg-${var.environment}"
+    Name = "gfdigital_${var.environment}_myaccount_vpce_sg"
   })
 }
 
@@ -31,7 +31,7 @@ resource "aws_vpc_endpoint" "secretsmanager" {
   private_dns_enabled = true
 
   tags = merge(var.default_tags, {
-    Name = "vpce-secretsmanager-${var.environment}"
+    Name = "gfdigital_${var.environment}_myaccount_vpce_secretsmanager"
   })
 }
 
@@ -44,6 +44,6 @@ resource "aws_vpc_endpoint" "ssm" {
   private_dns_enabled = true
 
   tags = merge(var.default_tags, {
-    Name = "vpce-ssm-${var.environment}"
+    Name = "gfdigital_${var.environment}_myaccount_vpce_ssm"
   })
 }

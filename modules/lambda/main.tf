@@ -1,5 +1,5 @@
 resource "aws_lambda_function" "this" {
-  function_name = var.function_name
+  function_name = "gfdigital_${var.environment}_myaccount_function"
   role          = var.role_arn
   handler       = var.handler
   runtime       = var.runtime
@@ -8,6 +8,6 @@ resource "aws_lambda_function" "this" {
   publish       = true
 
   tags = merge(var.default_tags, {
-    Name = var.function_name
+    Name = "gfdigital_${var.environment}_myaccount_lambda_function"
   })
 }

@@ -1,14 +1,14 @@
 resource "aws_cloudwatch_log_group" "this" {
-  name              = var.log_group_name
+  name              = "/gfdigital/${var.environment}/myaccount/application"
   retention_in_days = var.retention_in_days
 
   tags = merge(var.default_tags, {
-    Name = "${var.environment}-log-group"
+    Name = "gfdigital_${var.environment}_myaccount_log_group"
   })
 }
 
 resource "aws_cloudwatch_metric_alarm" "errors" {
-  alarm_name          = "${var.environment}-error-alarm"
+  alarm_name          = "gfdigital_${var.environment}_myaccount_error_alarm"
   alarm_description   = "Alarm when the ${var.environment} error metric exceeds threshold."
   namespace           = var.metric_namespace
   metric_name         = var.metric_name

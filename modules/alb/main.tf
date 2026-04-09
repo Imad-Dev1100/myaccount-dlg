@@ -1,5 +1,5 @@
 resource "aws_security_group" "alb" {
-  name        = "alb-sg-${var.environment}"
+  name        = "gfdigital_${var.environment}_myaccount_alb_sg"
   description = "Security group for the ALB in ${var.environment}."
   vpc_id      = var.vpc_id
 
@@ -18,19 +18,19 @@ resource "aws_security_group" "alb" {
   }
 
   tags = merge(var.default_tags, {
-    Name = "alb-sg-${var.environment}"
+    Name = "gfdigital_${var.environment}_myaccount_alb_sg"
   })
 }
 
 resource "aws_lb" "alb" {
-  name               = "alb-${var.environment}"
+  name               = "gfdigital-${var.environment}-myaccount-alb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb.id]
   subnets            = var.subnet_ids
 
   tags = merge(var.default_tags, {
-    Name = "alb-${var.environment}"
+    Name = "gfdigital_${var.environment}_myaccount_alb"
   })
 }
 

@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "app" {
-  bucket = "${var.bucket_prefix}-bucket"
+  bucket = "${var.bucket_prefix}-app"
   acl    = "private"
 
   versioning {
@@ -16,7 +16,7 @@ resource "aws_s3_bucket" "app" {
   }
 
   tags = merge(var.default_tags, {
-    Name = "s3-${var.environment}-bucket"
+    Name = "gfdigital_${var.environment}_myaccount_s3_appbucket"
   })
 }
 

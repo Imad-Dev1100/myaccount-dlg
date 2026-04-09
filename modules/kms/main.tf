@@ -36,7 +36,7 @@ resource "aws_kms_key" "main" {
   })
 
   tags = merge(var.default_tags, {
-    Name = "kms-${var.environment}"
+    Name = "gfdigital_${var.environment}_myaccount_kms_key"
   })
 }
 

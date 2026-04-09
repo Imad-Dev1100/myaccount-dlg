@@ -6,7 +6,7 @@ resource "aws_cloudfront_distribution" "this" {
 
   origins {
     domain_name = var.origin_domain_name
-    origin_id   = "s3-origin"
+    origin_id   = "gfdigital_${var.environment}_myaccount_s3_origin"
 
     custom_origin_config {
       http_port              = 80
@@ -17,7 +17,7 @@ resource "aws_cloudfront_distribution" "this" {
   }
 
   default_cache_behavior {
-    target_origin_id       = "s3-origin"
+    target_origin_id       = "gfdigital_${var.environment}_myaccount_s3_origin"
     viewer_protocol_policy = "redirect-to-https"
 
     allowed_methods = ["GET", "HEAD", "OPTIONS"]
@@ -42,6 +42,6 @@ resource "aws_cloudfront_distribution" "this" {
   }
 
   tags = merge(var.default_tags, {
-    Name = "cloudfront-${var.environment}"
+    Name = "gfdigital_${var.environment}_myaccount_cloudfront_distribution"
   })
 }
